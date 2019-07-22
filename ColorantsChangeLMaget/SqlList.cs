@@ -17,7 +17,9 @@
                             SELECT  a.InnerColorId,d.ColorantId,a.ColorCode '内部色号',d.ColorantCode '色母编码',d.ColorantDensity '色母密度',
 		                            ISNULL(c.Weight,c.WeightPercent) '色母量(G)',CAST(0 as decimal(18,6)) '色母量(G)之和',
 		                            CAST(0 as decimal(18,6)) '色母量(KG)',
-		                            CAST(0 as decimal(18,6)) '色母量(L)中间值之和',CAST(0 as decimal(18,6)) '色母量(L)'
+		                            CAST(0 as decimal(18,6)) '色母量(L)中间值之和',CAST(0 as decimal(18,6)) '色母量(L)',
+		                            CAST(0 AS DECIMAL(18,6)) '色母量(L)之和',
+		                            CAST(0 as decimal(18,6)) '体积占比'
 		                            INTO #a
                             FROM dbo.InnerColor a
                             INNER JOIN dbo.ColorFormula b ON a.InnerColorId=b.InnerColorId
@@ -32,7 +34,7 @@
 
                             WHERE A.RelationId=1                      --1为OEM配方 其它的都为车队配方
                             AND   F.BrandName='{brandName}'--'Perfecoat'            --品牌参数
-                            AND   E.ProductId={productId}--8						 --产品系列参数 (8:1K 7:2K) 注:根据品牌不同,这里的产品系列ID也会不同
+                            AND   E.ProductId='{productId}'--8						 --产品系列参数 (8:1K 7:2K) 注:根据品牌不同,这里的产品系列ID也会不同
                             --AND   a.InnerColorId='763'--'46279'--'66810'			 --内部色号ID
                             --AND   b.LayerNumber=1					 --层
                             --AND   b1.FormulaVersionDate='2018-08-14 00:00:00.000'    --版本日期
@@ -73,7 +75,25 @@
 				                            FROM #a c
 			                            ) AS a2 ON #a.InnerColorId=a2.InnerColorId AND #a.ColorantId=a2.ColorantId
 
-                            SELECT a.内部色号,a.色母编码,a.色母密度,a.[色母量(G)],a.[色母量(KG)],a.[色母量(L)]
+                            --更新色母量(L)之和
+                            UPDATE #a SET [色母量(L)之和]=a3.[色母量(L)之和]
+                            FROM #a
+                            INNER JOIN (
+				                            SELECT b1.InnerColorId,SUM(b1.[色母量(L)]) '色母量(L)之和'
+				                            FROM #a b1
+				                            GROUP BY b1.InnerColorId
+			                            ) AS a3 ON #a.InnerColorId=a3.InnerColorId
+
+                            --更新体积占比
+                            UPDATE #a SET 体积占比=a4.体积占比
+                            FROM #a
+                            INNER JOIN (
+				                            SELECT b2.InnerColorId,b2.ColorantId,round(b2.[色母量(L)]/b2.[色母量(L)之和]*100,2) '体积占比'
+				                            FROM #a b2
+			                            ) AS a4 ON #a.InnerColorId=a4.InnerColorId AND #a.ColorantId=a4.ColorantId
+
+
+                            SELECT a.内部色号,a.色母编码,a.色母密度,a.[色母量(G)],a.[色母量(KG)],a.[色母量(L)],a.体积占比
                             FROM #a a
                             order by a.InnerColorId,a.ColorantId
 

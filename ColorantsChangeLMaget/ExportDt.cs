@@ -81,6 +81,9 @@ namespace ColorantsChangeLMaget
                             case 5:
                                 row.CreateCell(j).SetCellValue("色母量(L)");
                                 break;
+                            case 6:
+                                row.CreateCell(j).SetCellValue("体积占比");
+                                break;
                                 #endregion
                         }
                     }
@@ -90,7 +93,7 @@ namespace ColorantsChangeLMaget
                     //计算进行循环的结束行
                     var endrow = i == sheetcount ? tempdt.Rows.Count : i * 90000;
 
-                    //每一个sheet表显示20000行  
+                    //每一个sheet表显示90000行  
                     for (var j = startrow; j < endrow; j++)
                     {
                         //创建行
@@ -98,13 +101,22 @@ namespace ColorantsChangeLMaget
                         //循环获取DT内的列值记录
                         for (var k = 0; k < tempdt.Columns.Count; k++)
                         {
-                            row.CreateCell(k).SetCellValue(Convert.ToString(tempdt.Rows[j][k]));
+                            if (k == 0 || k == 1)
+                            {
+                                row.CreateCell(k).SetCellValue(Convert.ToString(tempdt.Rows[j][k]));
+                            }
+                            else
+                            {
+                               row.CreateCell(k).SetCellValue(Convert.ToDouble(tempdt.Rows[j][k])); 
+                            }
+                            
                         }
                         rownum++;
                     }
                     //当一个SHEET页填充完毕后,需将变量初始化
                     rownum = 1;
                 }
+
                 ////写入数据
                 var file = new FileStream(fileAddress, FileMode.Create);
                 xssfWorkbook.Write(file);

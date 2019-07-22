@@ -46,6 +46,10 @@ namespace ColorantsChangeLMaget
                         dc.ColumnName = "色母量(L)";
                         dc.DataType = Type.GetType("System.Decimal");
                         break;
+                    case 6:
+                        dc.ColumnName = "体积占比";
+                        dc.DataType = Type.GetType("System.Decimal");
+                        break;
                 }
                 dt.Columns.Add(dc);
             }
