@@ -79,11 +79,17 @@ namespace ColorantsChangeLMaget
                                 row.CreateCell(j).SetCellValue("色母量(KG)");
                                 break;
                             case 5:
-                                row.CreateCell(j).SetCellValue("色母量(L)");
+                                row.CreateCell(j).SetCellValue("1KG配方各色母体积");
                                 break;
                             case 6:
-                                row.CreateCell(j).SetCellValue("体积占比");
+                                row.CreateCell(j).SetCellValue("1KG体积比");
                                 break;
+                            //case 5:
+                            //    row.CreateCell(j).SetCellValue("色母量(L)");
+                            //    break;
+                            //case 6:
+                            //    row.CreateCell(j).SetCellValue("体积占比");
+                            //    break;
                                 #endregion
                         }
                     }
